@@ -49,8 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (newText=='Delete'){
         _counter=0;
       } else{
-        var myInt = int.parse(newText);
-        assert(myInt is int);
+        final myInt = int.parse(newText);
         _counter = myInt+_counter;
       }
 
@@ -90,12 +89,12 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           FloatingActionButton(
             onPressed: _incrementCounter,
-            child: Icon(Icons.add),
+            child: const Icon(Icons.add),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           FloatingActionButton(
             onPressed: _decrementCounter,
-            child: Icon(Icons.delete),
+            child: const Icon(Icons.delete),
           ),
         ],
       ),
@@ -103,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 class FormExample extends StatefulWidget {
-  final Function(String) onTextChanged;
+  final void Function(String) onTextChanged;
 
   const FormExample({super.key, required this.onTextChanged});
 
@@ -120,7 +119,6 @@ class _FormExampleState extends State<FormExample> {
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           TextFormField(
             decoration: const InputDecoration(
@@ -137,7 +135,7 @@ class _FormExampleState extends State<FormExample> {
             },
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: ElevatedButton(
               onPressed: () {
 
