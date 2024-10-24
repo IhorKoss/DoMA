@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_project/validators/validators.dart';
 import 'package:my_project/widgets/custom_form_button.dart';
 import 'package:my_project/widgets/input_custom.dart';
 
@@ -7,6 +8,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
     return  Scaffold(
         appBar: AppBar(
           iconTheme: const IconThemeData(
@@ -35,32 +37,27 @@ class LoginPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Form(
+                key: formKey,
                 child:
                  Column(
                    children: [
                      const Image(image: AssetImage('assets/images/ep_logo.png'), width: 400,),
                      const SizedBox(height: 15),
                      TextInput(
-                       validator: (value) {
-                         if (value == null || value.isEmpty) {
-                           return 'Це поле не може бути порожнім';
-                         }
-                         return null;
-                       },
+                       validator: Validators.studentId,
                        hintText: 'Номер студ. квитка',
                      ),
                      const SizedBox(height: 15),
                      TextInput(
-                       validator: (value) {
-                         if (value == null || value.isEmpty) {
-                           return 'Це поле не може бути порожнім';
-                         }
-                         return null;
-                       },
+                       validator: Validators.password,
                        hintText: 'Пароль',
                      ),
                      const SizedBox(height: 15),
-                     const CustomFormButton(
+                     CustomFormButton(
+                       onTap: (){
+                         if (formKey.currentState!.validate()) {
+                         }
+                       },
                        buttonText: 'Увійти',
                      ),
                      InkWell(
