@@ -7,12 +7,14 @@ class TextInput extends StatelessWidget {
     this.hintText,
     this.obscureText,
     this.onChanged,
+    this.controller,
   });
 
   final String? Function(String?)? validator;
   final String? hintText;
   final bool? obscureText;
   final ValueChanged<String>? onChanged;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {

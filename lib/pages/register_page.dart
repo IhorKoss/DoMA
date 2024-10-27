@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 
 import 'package:my_project/widgets/custom_form_button.dart';
 import 'package:my_project/widgets/input_custom.dart';
+import 'package:provider/provider.dart';
 
-import '../validators/validators.dart';
+import 'package:my_project/database/mongo_service.dart';
+import 'package:my_project/models/student_model.dart';
+import 'package:my_project/validators/validators.dart';
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-  final formKey = GlobalKey<FormState>();
-  String? password;
+    final formKey = GlobalKey<FormState>();
+    String? password;
+    String? studentId;
+    String? email;
     return  Scaffold(
         appBar: AppBar(
           iconTheme: const IconThemeData(
@@ -50,11 +55,17 @@ class RegisterPage extends StatelessWidget {
                         TextInput(
                           validator: Validators.studentId,
                           hintText: 'Номер студ. квитка',
+                          onChanged: (value) {
+                            studentId = value.toString();
+                          },
                         ),
                         const SizedBox(height: 15),
                         TextInput(
                           validator: Validators.email,
                           hintText: 'Електронна пошта',
+                          onChanged: (value) {
+                            email = value.toString();
+                          },
                         ),
                         const SizedBox(height: 15),
                         TextInput(
@@ -62,15 +73,13 @@ class RegisterPage extends StatelessWidget {
                           hintText: 'Пароль',
                           obscureText: true,
                           onChanged: (value) {
-                              password = value;
+                              password = value.toString();
                           },
                         ),
                         const SizedBox(height: 15),
                         TextInput(
                           validator: (value) {
                             if (value != password) {
-                              print(value);
-                              print(password);
                               return 'Паролі не співпадають';
                             }
                             return null;
@@ -80,8 +89,24 @@ class RegisterPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 15),
                         CustomFormButton(
-                          onTap: (){
+                          onTap: () async {
                             if (formKey.currentState!.validate()) {
+                              final returnId= await MongoService.addStudent({
+                                'studentId': studentId,
+                                'email': email,
+                                'password': password,
+                              });
+                              final newStudent = await MongoService.getStudentById(returnId!);
+                              Provider.of<Student>(context, listen: false).setNewStudent(
+                                  email: newStudent!['email'] as String,
+                                  password: newStudent['password'] as String,
+                                  studentId: newStudent['studentId'] as String,);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Реєстрація успішна!'),
+                                ),
+                              );
+                              Navigator.pushNamed(context, '/home');
                             }
                           },
                           buttonText: 'Зареєструватись',

@@ -1,38 +1,105 @@
-class Student {
-  final String id;
-  final String email;
-  final String fullName;
-  final String group;
-  final String password;
-  final String studentId;
-  final bool isFullTimeStudent;
+import 'package:flutter/material.dart';
 
-  final String createdAt;
-  final String? updatedAt;
+class Student with ChangeNotifier {
+  String _email;
+  String _password;
+  String _studentId;
+  String _group;
+  String _fullName;
+  bool _isFullTimeStudent;
 
   Student({
-    required this.id,
-    required this.email,
-    required this.group,
-    required this.fullName,
-    required this.password,
-    required this.studentId,
-    required this.isFullTimeStudent,
-    required this.createdAt,
-    this.updatedAt,
-  });
-  
-  factory Student.fromSqfliteDatabase(Map<String, dynamic> map) =>
-      Student(
-        id: map['id'] as String? ?? '',
-        email: map['email'] as String? ?? '',
-        fullName: map['fullName'] as String? ?? '',
-        group: map['group'] as String? ?? '',
-        password: map['password'] as String? ?? '',
-        studentId: map['studentId'] as String? ?? '',
-        isFullTimeStudent: map['isFullTimeStudent'] == 1,
-        createdAt: DateTime.fromMillisecondsSinceEpoch(
-            map['createdAt'] as int).toIso8601String(),
-        updatedAt: map['updatedAt'] as String? ?? '',
-      );
+    String email = '',
+    String password = '',
+    String studentId = '',
+    String fullName = '',
+    String group = '',
+    bool isFullTimeStudent = true,
+  })  :
+        _email = email,
+        _fullName = fullName,
+        _group = group,
+        _password = password,
+        _studentId = studentId,
+        _isFullTimeStudent = isFullTimeStudent;
+
+  String get email => _email;
+  String get fullName => _fullName;
+  String get group => _group;
+  String get studentId => _studentId;
+  bool get isFullTimeStudent => _isFullTimeStudent;
+
+  void setNewStudent({
+    required String email,
+    required String password,
+    required String studentId,
+  }) {
+    _email = email;
+    _password = password;
+    _studentId = studentId;
+    notifyListeners();
+  }
+  void setLoggedInStudent({
+    required String email,
+    required String password,
+    required String studentId,
+    String? fullName,
+    String? group,
+    bool? isFullTimeStudent,
+  }) {
+    _email = email;
+    _password = password;
+    _studentId = studentId;
+    _fullName = fullName ?? '';
+    _group = group ?? '';
+    _isFullTimeStudent = isFullTimeStudent ?? true;
+    notifyListeners();
+  }
+
+  void setEmail(String email) {
+    _email = email;
+    notifyListeners();
+  }
+
+  void setFullName(String fullName) {
+    _fullName = fullName;
+    notifyListeners();
+  }
+
+  void setGroup(String group) {
+    _group = group;
+    notifyListeners();
+  }
+
+  void setPassword(String password) {
+    _password = password;
+    notifyListeners();
+  }
+
+  void setStudentId(String studentId) {
+    _studentId = studentId;
+    notifyListeners();
+  }
+
+  void setIsFullTimeStudent(bool isFullTimeStudent) {
+    _isFullTimeStudent = isFullTimeStudent;
+    notifyListeners();
+  }
+
+  bool get hasData {
+    return _email.isNotEmpty &&
+        _password.isNotEmpty &&
+        _studentId.isNotEmpty;
+  }
+
+  void logOutStudent()
+  {
+    _email = '';
+    _password = '';
+    _studentId = '';
+    _fullName = '';
+    _group = '';
+    _isFullTimeStudent = true;
+    notifyListeners();
+  }
 }
