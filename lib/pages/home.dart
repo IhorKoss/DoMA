@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_project/classes/home_menu_btn_class.dart';
+import 'package:my_project/models/student_model.dart';
 import 'package:my_project/widgets/home_menu_btn.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -83,43 +85,58 @@ class _HomeState extends State<Home> {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
                       child: ListView(
-
                         children: [
-                          const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Кос Ігор Іванович',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 28,
-                                ),
-                              ),
-                              Text(
-                                'ВК0000000',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                              Text(
-                                'Денна форма навчання',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Text(
-                                'Група: КБ-406',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22,
-                                ),
-                              ),
-                            ],
+                          Consumer<Student>(
+                            builder: (context, student, child) {
+                              if(student.hasData){
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      student.fullName.isNotEmpty ? student.fullName : 'Завершіть реєстрацію у профілі',
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 28,
+                                      ),
+                                    ),
+                                    Text(
+                                      student.studentId,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                        letterSpacing: 2,
+                                      ),
+                                    ),
+                                    Text(
+                                      student.isFullTimeStudent ? 'Денна форма навчання' : 'Заочна форма навчання',
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    if (student.group.isNotEmpty)
+                                      Text(
+                                        student.group,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 22,
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              } else {
+                                return const Text(
+                                  'Ви не авторизовані',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 28,
+                                  ),
+                                );
+                              }
+                              },
                           ),
                           const SizedBox(height: 10),
                           const Divider(
