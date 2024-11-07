@@ -4,8 +4,11 @@ import 'package:my_project/models/student_model.dart';
 import 'package:my_project/widgets/home_menu_btn.dart';
 import 'package:provider/provider.dart';
 
+import '../database/mongo_service.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
+
 
   @override
   _HomeState createState() => _HomeState();
@@ -40,7 +43,25 @@ class _HomeState extends State<Home> {
       imageLink: 'assets/images/ep_small.png',
     ),
   ];
+  @override
+  void initState() {
+    super.initState();
+    _initializeLoggedStudent();
+  }
 
+  Future<void> _initializeLoggedStudent() async {
+    final loggedStudent = await MongoService.getLoggedStudent();
+    if (loggedStudent != null) {
+      Provider.of<Student>(context, listen: false).setLoggedInStudent(
+        email: loggedStudent['email'] as String,
+        password: loggedStudent['password'] as String,
+        studentId: loggedStudent['studentId'] as String,
+        fullName: loggedStudent['fullName'] != null ? loggedStudent['fullName'] as String : '',
+        group: loggedStudent['group'] != null ? loggedStudent['group'] as String : '',
+        isFullTimeStudent: loggedStudent['isFullTimeStudent'] != null ? loggedStudent['isFullTimeStudent'] as bool : true,
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return  Scaffold(

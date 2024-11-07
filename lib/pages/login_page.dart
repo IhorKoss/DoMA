@@ -1,14 +1,28 @@
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:my_project/database/mongo_service.dart';
 import 'package:my_project/models/student_model.dart';
 import 'package:my_project/validators/validators.dart';
 import 'package:my_project/widgets/custom_form_button.dart';
 import 'package:my_project/widgets/input_custom.dart';
+import 'package:my_project/widgets/loggingDialogWindow.dart';
 import 'package:provider/provider.dart';
+
+import '../widgets/no_interned_dialog.dart';
+
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
+  Future<bool> _checkInternetConnection(BuildContext context) async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      NoInternetDialog.show(context);
+      return false;
+    }
+    return true;
+  }
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
@@ -67,31 +81,27 @@ class LoginPage extends StatelessWidget {
                      const SizedBox(height: 15),
                      CustomFormButton(
                        onTap: () async {
-                         if (formKey.currentState!.validate()) {
-                           final loggingStudent = await MongoService.getStudentByEmail(email!);
-                           if (loggingStudent != null) {
-                             if (loggingStudent['password'] == password) {
-                               Provider.of<Student>(context, listen: false).setLoggedInStudent(
-                                   email: loggingStudent['email'] as String,
-                                   password: loggingStudent['password'] as String,
-                                   studentId: loggingStudent['studentId'] as String,
-                                   fullName: loggingStudent['fullName'] != null ? loggingStudent['fullName'] as String:'',
-                                   group: loggingStudent['group'] != null ? loggingStudent['group'] as String : '',
-                                   isFullTimeStudent: loggingStudent['isFullTimeStudent']!=null ? loggingStudent['isFullTimeStudent'] as bool:true,
-                               );
-                               ScaffoldMessenger.of(context).showSnackBar(
-                                 const SnackBar(
-                                   content: Text('З поверненням!'),
-                                 ),
-                               );
-                               Navigator.pushNamed(context, '/home');
+                         if (await _checkInternetConnection(context)) {
+                           if (formKey.currentState!.validate()) {
+                             final loggingStudent = await MongoService.getStudentByEmail(email!);
+                             if (loggingStudent != null) {
+                               if (loggingStudent['password'] == password) {
+                                 Provider.of<Student>(context, listen: false).setLoggedInStudent(
+                                     email: loggingStudent['email'] as String,
+                                     password: loggingStudent['password'] as String,
+                                     studentId: loggingStudent['studentId'] as String,
+                                     fullName: loggingStudent['fullName'] != null ? loggingStudent['fullName'] as String:'',
+                                     group: loggingStudent['group'] != null ? loggingStudent['group'] as String : '',
+                                     isFullTimeStudent: loggingStudent['isFullTimeStudent']!=null ? loggingStudent['isFullTimeStudent'] as bool:true,
+                                 );
+                                 Navigator.pushNamed(context, '/home');
+                                 LoginDialog.show(context, true);
+                                 await MongoService.loggedStudent(loggingStudent);
+                               }else {
+                                 LoginDialog.show(context, false);
+                               }
                              }else {
-                               ScaffoldMessenger.of(context).showSnackBar(
-                                 SnackBar(
-                                   content: const Text('Неправильні пошта або пароль. Спробуйте ще раз.'),
-                                   backgroundColor: Colors.red[400],
-                                 ),
-                               );
+                               LoginDialog.show(context, false);
                              }
                            }
                          }

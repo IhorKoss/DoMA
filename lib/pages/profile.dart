@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../database/mongo_service.dart';
 import '../models/student_model.dart';
+import '../widgets/logout_dialog_widget.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -17,22 +18,27 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-        appBar: AppBar(
-          iconTheme: const IconThemeData(
-            color: Colors.white, //change your color here
+      appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: Colors.white, // change your color here
+        ),
+        backgroundColor: Colors.blue[900],
+        title: const Text(
+          'Профіль користувача',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-          backgroundColor: Colors.blue[900],
-          title: const Text(
-            'Профіль користувача',
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,),),
-          centerTitle: true,
-          elevation: 0,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
+        ),
+        centerTitle: true,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              bool? shouldLogout = await LogoutDialog.show(context);
+              if (shouldLogout == true) {
+                await MongoService.deleteLoggedStudent();
                 Provider.of<Student>(context, listen: false).logOutStudent();
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -40,11 +46,12 @@ class _ProfileState extends State<Profile> {
                   ),
                 );
                 Navigator.pushNamed(context, '/home');
-              },
-              color: Colors.white,
-            ),
-          ],
-        ),
+              }
+            },
+            color: Colors.white,
+          ),
+        ],
+      ),
         body: Container(
           width: double.infinity,
           height: double.infinity,
