@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
 import 'package:my_project/widgets/custom_form_button.dart';
@@ -7,9 +8,18 @@ import 'package:provider/provider.dart';
 import 'package:my_project/database/mongo_service.dart';
 import 'package:my_project/models/student_model.dart';
 import 'package:my_project/validators/validators.dart';
+
+import '../widgets/no_interned_dialog.dart';
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
-
+  Future<bool> _checkInternetConnection(BuildContext context) async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      NoInternetDialog.show(context);
+      return false;
+    }
+    return true;
+  }
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
@@ -90,23 +100,26 @@ class RegisterPage extends StatelessWidget {
                         const SizedBox(height: 15),
                         CustomFormButton(
                           onTap: () async {
-                            if (formKey.currentState!.validate()) {
-                              final returnId= await MongoService.addStudent({
-                                'studentId': studentId,
-                                'email': email,
-                                'password': password,
-                              });
-                              final newStudent = await MongoService.getStudentById(returnId!);
-                              Provider.of<Student>(context, listen: false).setNewStudent(
-                                  email: newStudent!['email'] as String,
-                                  password: newStudent['password'] as String,
-                                  studentId: newStudent['studentId'] as String,);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Реєстрація успішна!'),
-                                ),
-                              );
-                              Navigator.pushNamed(context, '/home');
+                            if (await _checkInternetConnection(context)) {
+                              if (formKey.currentState!.validate()) {
+                                final returnId= await MongoService.addStudent({
+                                  'studentId': studentId,
+                                  'email': email,
+                                  'password': password,
+                                });
+                                final newStudent = await MongoService.getStudentById(returnId!);
+                                Provider.of<Student>(context, listen: false).setNewStudent(
+                                    email: newStudent!['email'] as String,
+                                    password: newStudent['password'] as String,
+                                    studentId: newStudent['studentId'] as String,);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Реєстрація успішна!'),
+                                  ),
+                                );
+                                Navigator.pushNamed(context, '/home');
+                                await MongoService.loggedStudent(newStudent);
+                              }
                             }
                           },
                           buttonText: 'Зареєструватись',
