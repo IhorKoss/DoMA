@@ -7,13 +7,11 @@ import 'package:my_project/pages/profile.dart';
 import 'package:my_project/pages/register_page.dart';
 import 'package:provider/provider.dart';
 
-import 'database/mongo_service.dart';
 import 'internet_connection/connectivity_notifier.dart';
 
 
 Future<void> main() async {
       WidgetsFlutterBinding.ensureInitialized();
-      await MongoService.connect();
 
       runApp(ChangeNotifierProvider(
         create: (context) => Student(),

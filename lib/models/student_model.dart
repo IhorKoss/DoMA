@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
 class Student with ChangeNotifier {
+  String _id;
   String _email;
   String _password;
   String _studentId;
   String _group;
   String _fullName;
   bool _isFullTimeStudent;
+  
 
   Student({
+    String id ='',
     String email = '',
     String password = '',
     String studentId = '',
@@ -16,6 +19,7 @@ class Student with ChangeNotifier {
     String group = '',
     bool isFullTimeStudent = true,
   })  :
+        _id = id,
         _email = email,
         _fullName = fullName,
         _group = group,
@@ -23,6 +27,7 @@ class Student with ChangeNotifier {
         _studentId = studentId,
         _isFullTimeStudent = isFullTimeStudent;
 
+  String get id => _id;
   String get email => _email;
   String get fullName => _fullName;
   String get group => _group;
@@ -30,16 +35,19 @@ class Student with ChangeNotifier {
   bool get isFullTimeStudent => _isFullTimeStudent;
 
   void setNewStudent({
+    required String id,
     required String email,
     required String password,
     required String studentId,
   }) {
+    _id = id;
     _email = email;
     _password = password;
     _studentId = studentId;
     notifyListeners();
   }
   void setLoggedInStudent({
+    required String id,
     required String email,
     required String password,
     required String studentId,
@@ -47,12 +55,18 @@ class Student with ChangeNotifier {
     String? group,
     bool? isFullTimeStudent,
   }) {
+    _id = id;
     _email = email;
     _password = password;
     _studentId = studentId;
     _fullName = fullName ?? '';
     _group = group ?? '';
     _isFullTimeStudent = isFullTimeStudent ?? true;
+    notifyListeners();
+  }
+
+  void setId(String id) {
+    _id = id;
     notifyListeners();
   }
 
@@ -87,13 +101,16 @@ class Student with ChangeNotifier {
   }
 
   bool get hasData {
-    return _email.isNotEmpty &&
+    return
+        _id.isNotEmpty &&
+        _email.isNotEmpty &&
         _password.isNotEmpty &&
         _studentId.isNotEmpty;
   }
 
   void logOutStudent()
   {
+    _id = '';
     _email = '';
     _password = '';
     _studentId = '';
@@ -101,5 +118,18 @@ class Student with ChangeNotifier {
     _group = '';
     _isFullTimeStudent = true;
     notifyListeners();
+  }
+  factory Student.fromJson(Map<String, dynamic> json) {
+    return Student(
+      id: json['_id']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      password: json['password']?.toString() ?? '',
+      studentId: json['studentId']?.toString() ?? '',
+      fullName: json['fullName']?.toString() ?? '',
+      group: json['group']?.toString() ?? '',
+      isFullTimeStudent: json['isFullTimeStudent'] == null
+          ? true
+          : json['isFullTimeStudent'] as bool,
+    );
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:my_project/database/student_service.dart';
 import 'package:provider/provider.dart';
 
-import '../database/mongo_service.dart';
+import '../database/storage_service.dart';
 import '../models/student_model.dart';
 import '../widgets/logout_dialog_widget.dart';
 
@@ -38,7 +39,7 @@ class _ProfileState extends State<Profile> {
             onPressed: () async {
               bool? shouldLogout = await LogoutDialog.show(context);
               if (shouldLogout == true) {
-                await MongoService.deleteLoggedStudent();
+                await LocalStorageService.clearLoggedStudent();
                 Provider.of<Student>(context, listen: false).logOutStudent();
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -105,7 +106,7 @@ class _ProfileState extends State<Profile> {
                                               final Map<String, dynamic> updatedData = {
                                                 'fullName': fullNameController.text,
                                               };
-                                              await MongoService.updateStudent(student.email,updatedData);
+                                              await StudentService.updateStudentById(student.id,updatedData);
                                               Provider.of<Student>(context, listen: false).setFullName(fullNameController.text);
                                               Navigator.of(context).pop();
                                             }
@@ -176,7 +177,7 @@ class _ProfileState extends State<Profile> {
                                             final Map<String, dynamic> updatedData = {
                                               'group': groupController.text,
                                             };
-                                            await MongoService.updateStudent(student.email,updatedData);
+                                            await StudentService.updateStudentById(student.id,updatedData);
                                             Provider.of<Student>(context, listen: false).setGroup(groupController.text);
                                             Navigator.of(context).pop();
                                           }
