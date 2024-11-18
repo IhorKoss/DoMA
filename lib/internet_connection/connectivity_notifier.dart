@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import '../database/mongo_service.dart';
 import '../widgets/no_interned_dialog.dart';
 
 class ConnectivityNotifier extends StatefulWidget {
@@ -31,7 +30,6 @@ class _ConnectivityNotifierState extends State<ConnectivityNotifier> {
       } else {
         if (!_isConnected) {
           _isConnected = true;
-          MongoService.retryConnection(context);
         }
       }
     });

@@ -5,10 +5,11 @@ import 'package:my_project/widgets/custom_form_button.dart';
 import 'package:my_project/widgets/input_custom.dart';
 import 'package:provider/provider.dart';
 
-import 'package:my_project/database/mongo_service.dart';
 import 'package:my_project/models/student_model.dart';
 import 'package:my_project/validators/validators.dart';
 
+import '../database/auth_service.dart';
+import '../database/storage_service.dart';
 import '../widgets/no_interned_dialog.dart';
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -102,23 +103,19 @@ class RegisterPage extends StatelessWidget {
                           onTap: () async {
                             if (await _checkInternetConnection(context)) {
                               if (formKey.currentState!.validate()) {
-                                final returnId= await MongoService.addStudent({
-                                  'studentId': studentId,
-                                  'email': email,
-                                  'password': password,
-                                });
-                                final newStudent = await MongoService.getStudentById(returnId!);
+                                final registered_student = await AuthService.register(email!, password!, studentId!);
                                 Provider.of<Student>(context, listen: false).setNewStudent(
-                                    email: newStudent!['email'] as String,
-                                    password: newStudent['password'] as String,
-                                    studentId: newStudent['studentId'] as String,);
+                                    id: registered_student['_id'] as String,
+                                    email: email as String,
+                                    password: password as String,
+                                    studentId: studentId as String,);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('Реєстрація успішна!'),
                                   ),
                                 );
                                 Navigator.pushNamed(context, '/home');
-                                await MongoService.loggedStudent(newStudent);
+                                await LocalStorageService.saveLoggedStudent(registered_student);
                               }
                             }
                           },

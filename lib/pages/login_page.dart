@@ -1,7 +1,7 @@
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:my_project/database/mongo_service.dart';
+import 'package:my_project/database/auth_service.dart';
 import 'package:my_project/models/student_model.dart';
 import 'package:my_project/validators/validators.dart';
 import 'package:my_project/widgets/custom_form_button.dart';
@@ -9,6 +9,7 @@ import 'package:my_project/widgets/input_custom.dart';
 import 'package:my_project/widgets/loggingDialogWindow.dart';
 import 'package:provider/provider.dart';
 
+import '../database/storage_service.dart';
 import '../widgets/no_interned_dialog.dart';
 
 
@@ -83,10 +84,10 @@ class LoginPage extends StatelessWidget {
                        onTap: () async {
                          if (await _checkInternetConnection(context)) {
                            if (formKey.currentState!.validate()) {
-                             final loggingStudent = await MongoService.getStudentByEmail(email!);
-                             if (loggingStudent != null) {
-                               if (loggingStudent['password'] == password) {
+                             final loggingStudent = await AuthService.login(email!, password!);
+                             if (loggingStudent!=null) {
                                  Provider.of<Student>(context, listen: false).setLoggedInStudent(
+                                     id: loggingStudent['_id'] as String,
                                      email: loggingStudent['email'] as String,
                                      password: loggingStudent['password'] as String,
                                      studentId: loggingStudent['studentId'] as String,
@@ -96,10 +97,7 @@ class LoginPage extends StatelessWidget {
                                  );
                                  Navigator.pushNamed(context, '/home');
                                  LoginDialog.show(context, true);
-                                 await MongoService.loggedStudent(loggingStudent);
-                               }else {
-                                 LoginDialog.show(context, false);
-                               }
+                                 await LocalStorageService.saveLoggedStudent(loggingStudent);
                              }else {
                                LoginDialog.show(context, false);
                              }
