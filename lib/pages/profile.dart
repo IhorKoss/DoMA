@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ihor_flashlight_plugin/ihor_flashlight_plugin.dart';
 import 'package:my_project/database/student_service.dart';
 import 'package:provider/provider.dart';
 
@@ -189,6 +190,32 @@ class _ProfileState extends State<Profile> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              Text('Секретна функція :)',
+                                style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),),
+                              IconButton(
+                                iconSize: 35,
+                                icon: Icon(
+                                  IhorFlashlightPlugin.isFlashlightOn ? Icons.flashlight_on : Icons.flashlight_off,
+                                  color: IhorFlashlightPlugin.isFlashlightOn ? Colors.black : Colors.black,
+                                ),
+                                onPressed: () async {
+                                  if (IhorFlashlightPlugin.isFlashlightOn) {
+                                    await IhorFlashlightPlugin.offLight();
+                                  } else {
+                                    await IhorFlashlightPlugin.onLight();
+                                  }
+                                  setState(() {}); // Оновлення стану кнопки після натискання
+                                },
+                              ),
+                            ],
+                          )
                         ],
                       ),
                     ),

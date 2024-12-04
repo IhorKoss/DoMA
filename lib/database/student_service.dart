@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class StudentService {
-  static const String baseUrl = 'http://192.168.0.202:3000/students'; // Змініть URL на ваш сервер
+  static const String baseUrl = 'http://192.168.0.202:3000/students';
 
   static Future<Map<String, dynamic>> getStudentById(String id) async {
     final response = await http.get(
