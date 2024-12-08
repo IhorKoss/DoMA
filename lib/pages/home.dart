@@ -3,6 +3,7 @@ import 'package:my_project/classes/home_menu_btn_class.dart';
 import 'package:my_project/database/storage_service.dart';
 import 'package:my_project/models/student_model.dart';
 import 'package:my_project/widgets/home_menu_btn.dart';
+import 'package:provider/provider.dart';
 
 
 class Home extends StatefulWidget {
@@ -47,6 +48,22 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _loggedStudentFuture = LocalStorageService.getLoggedStudent();
+    _initializeLoggedStudent();
+  }
+
+  Future<void> _initializeLoggedStudent() async {
+    final loggedStudent = await LocalStorageService.getLoggedStudent();
+    if (loggedStudent != null) {
+      Provider.of<Student>(context, listen: false).setLoggedInStudent(
+        id: loggedStudent['_id'] as String,
+        email: loggedStudent['email'] as String,
+        password: loggedStudent['password'] as String,
+        studentId: loggedStudent['studentId'] as String,
+        fullName: loggedStudent['fullName'] != null ? loggedStudent['fullName'] as String : '',
+        group: loggedStudent['group'] != null ? loggedStudent['group'] as String : '',
+        isFullTimeStudent: loggedStudent['isFullTimeStudent'] != null ? loggedStudent['isFullTimeStudent'] as bool : true,
+      );
+    }
   }
 
   @override

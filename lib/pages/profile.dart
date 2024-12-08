@@ -211,7 +211,7 @@ class _ProfileState extends State<Profile> {
                                   } else {
                                     await IhorFlashlightPlugin.onLight();
                                   }
-                                  setState(() {}); // Оновлення стану кнопки після натискання
+                                  setState(() {});
                                 },
                               ),
                             ],

@@ -9,7 +9,7 @@ class LocalStorageService {
   }
 
   static Future<Map<String, dynamic>?> getLoggedStudent() async {
-    await Future.delayed(const Duration(seconds: 3));
+    // await Future.delayed(const Duration(seconds: 3));
     final prefs = await SharedPreferences.getInstance();
     final String? studentJson = prefs.getString('loggedStudent');
     if (studentJson != null) {
